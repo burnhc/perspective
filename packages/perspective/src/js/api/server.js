@@ -125,14 +125,25 @@ export class Server {
                     tableMsgQueue.push(msg);
                     this._views[msg.view_name] = [];
                 } else {
-                    // create a new view and track it with `client_id`
-                    const msgs = this._views[msg.view_name];
-                    this._views[msg.view_name] = this._tables[msg.table_name].view(msg.config);
-                    this._views[msg.view_name].client_id = client_id;
-                    if (msgs) {
-                        for (const msg of msgs) {
-                            this.process(msg);
+                    // Create a new view and resolve the Promise on the client
+                    // with the name of the view, which the client will use to
+                    // construct a new view proxy.
+                    try {
+                        const msgs = this._views[msg.view_name];
+                        this._views[msg.view_name] = this._tables[msg.table_name].view(msg.config);
+                        this._views[msg.view_name].client_id = client_id;
+                        if (msgs) {
+                            for (const msg of msgs) {
+                                this.process(msg);
+                            }
                         }
+                        this.post({
+                            id: msg.id,
+                            data: msg.view_name
+                        });
+                    } catch (error) {
+                        this.process_error(msg, error);
+                        return;
                     }
                 }
                 break;
