@@ -88,32 +88,22 @@ export class Server {
                 break;
             case "table":
                 if (typeof msg.args[0] === "undefined") {
+                    // Cache messages for when a table is created but not fully
+                    // initialized, i.e. in the case when a table is created
+                    // from a view, as the view needs to be serialized to an
+                    // arrow before the table will be ready.
                     this._tables[msg.name] = [];
                 } else {
                     const msgs = this._tables[msg.name];
                     this._tables[msg.name] = this.perspective.table(msg.args[0], msg.options);
+
+                    // Process cached messages for this table.
                     if (msgs) {
                         for (const msg of msgs) {
                             this.process(msg);
                         }
                     }
                 }
-                break;
-            case "table_generate":
-                let g;
-                eval("g = " + msg.args);
-                g(function(tbl) {
-                    this._tables[msg.name] = tbl;
-                    this.post({
-                        id: msg.id,
-                        data: "created!"
-                    });
-                });
-                break;
-            case "table_execute":
-                let f;
-                eval("f = " + msg.f);
-                f(this._tables[msg.name]);
                 break;
             case "table_method":
             case "view_method":
@@ -122,6 +112,9 @@ export class Server {
             case "view":
                 const tableMsgQueue = this._tables[msg.table_name];
                 if (tableMsgQueue && Array.isArray(tableMsgQueue)) {
+                    // If the table is not initialized, defer this message for
+                    // until after the table is initialized, and create a new
+                    // message queue for the uninitialized view.
                     tableMsgQueue.push(msg);
                     this._views[msg.view_name] = [];
                 } else {
@@ -132,11 +125,14 @@ export class Server {
                         const msgs = this._views[msg.view_name];
                         this._views[msg.view_name] = this._tables[msg.table_name].view(msg.config);
                         this._views[msg.view_name].client_id = client_id;
+
+                        // Process cached messages for the view.
                         if (msgs) {
                             for (const msg of msgs) {
                                 this.process(msg);
                             }
                         }
+
                         this.post({
                             id: msg.id,
                             data: msg.view_name
