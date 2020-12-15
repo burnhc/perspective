@@ -749,7 +749,7 @@ class PerspectiveViewer extends ActionElement {
      * @memberof PerspectiveViewer
      */
     async download(flat = false) {
-        const view = flat ? this._table.view() : this._view;
+        const view = flat ? await this._table.view() : this._view;
         const csv = await view.to_csv();
         const element = document.createElement("a");
         const binStr = csv;
@@ -776,15 +776,30 @@ class PerspectiveViewer extends ActionElement {
      */
     copy(flat = false) {
         let data;
-        const view = flat ? this._table.view() : this._view;
-        view.to_csv()
-            .then(csv => {
-                data = csv;
-            })
-            .catch(err => {
-                console.error(err);
-                data = "";
-            });
+
+        if (flat) {
+            let view = this._table.view();
+            view.then(view => view.to_csv())
+                .then(csv => {
+                    data = csv;
+                })
+                .catch(err => {
+                    console.error(err);
+                    data = "";
+                });
+            view.delete();
+        } else {
+            this._view
+                .to_csv()
+                .then(csv => {
+                    data = csv;
+                })
+                .catch(err => {
+                    console.error(err);
+                    data = "";
+                });
+        }
+
         let count = 0;
         let f = () => {
             if (typeof data !== "undefined") {
