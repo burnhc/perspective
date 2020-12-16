@@ -320,7 +320,7 @@ configuration object:
 ```javascript
 const table = worker.table(data);
 
-const view = table.view({
+const view = await table.view({
     columns: ["Sales"],
     aggregates: {Sales: "sum"},
     row_pivot: ["Region", "Country"],
@@ -389,11 +389,11 @@ const worker2 = perspective.worker();
 
 // Create a `table and `view` on `worker1`.
 const table = worker1.table(data);
-const view = table.view({filter: [["State", "==", "Texas"]]});
+const view = await table.view({filter: [["State", "==", "Texas"]]});
 
 // Create a table from `view` in `worker2`
 const table2 = worker2.table(view);
-const view2 = table2.view({filter: [["City", "==", "Austin"]]});
+const view2 = await table2.view({filter: [["City", "==", "Austin"]]});
 
 //  Both `view1` and `view2` are updated.
 table.update([{State: "Texas", City: "Austin"}]);
@@ -655,7 +655,7 @@ const tbl = table(arr);
 host.host_table("table_one", tbl);
 
 // Or host a view
-const view = tbl.view({filter: [["State", "==", "Texas"]]});
+const view = await tbl.view({filter: [["State", "==", "Texas"]]});
 host.host_view("view_one", view);
 ```
 

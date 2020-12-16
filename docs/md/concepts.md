@@ -251,7 +251,7 @@ const table = perspective.table({
 });
 
 // Create a view showing just the `name` column.
-const view = table.view({
+const view = await table.view({
     columns: ["name"]
 });
 
@@ -335,7 +335,7 @@ In Perspective, row pivots are represented as an array of string column names
 which will be applied as row pivots:
 
 ```javascript
-const view = table.view({row_pivots: ["a", "c"]});
+const view = await table.view({row_pivots: ["a", "c"]});
 ```
 
 Pivots are applied in the order provided
@@ -368,7 +368,7 @@ In Perspective, column pivots are represented as an array of string column names
 which will be applied as column pivots:
 
 ```javascript
-const view = table.view({column_pivots: ["a", "c"]});
+const view = await table.view({column_pivots: ["a", "c"]});
 ```
 
 Row pivots and column pivots can be used in conjunction to categorize and
@@ -404,7 +404,7 @@ applied to columns in the `View` constructor using a dictionary of column
 name to aggregate function name:
 
 ```javascript
-const view = table.view({
+const view = await table.view({
     aggregates: {
         a: "avg",
         b: "distinct count"
@@ -436,7 +436,7 @@ This is represented in Perspective as an array of string column names passed to
 the `View` constructor:
 
 ```javascript
-const view = table.view({
+const view = await table.view({
     columns: ["a"]
 });
 ```
@@ -462,7 +462,7 @@ Perspective represents `sort` as an array of arrays, with the values of each
 inner array being a string column name and a string sort direction:
 
 ```javascript
-const view = table.view({
+const view = await table.view({
     sort: [["a", "asc"]]
 });
 ```
@@ -491,7 +491,7 @@ inner array being a string column name, a string filter operator, and a filter
 operand in the type of the column:
 
 ```javascript
-const view = table.view({
+const view = await table.view({
     filter: [["a", "<", 100]]
 });
 ```
