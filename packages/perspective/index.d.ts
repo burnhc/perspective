@@ -133,7 +133,7 @@ declare module "@finos/perspective" {
         schema(): Promise<Schema>;
         size(): Promise<number>;
         update(data: TableData, options?: {port_id?: number}): void;
-        view(config?: ViewConfig): View; // TODO: make async
+        view(config?: ViewConfig): Promise<View>;
         make_port(): number;
     };
 
