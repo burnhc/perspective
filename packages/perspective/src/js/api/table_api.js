@@ -24,6 +24,8 @@ export function table(worker, data, options) {
         this._worker = worker;
         this._name = options.name || Math.random() + "";
 
+        bindall(this);
+
         if (data.to_arrow) {
             this._worker.post({
                 cmd: "table",
@@ -129,21 +131,24 @@ table.prototype.remove_delete = unsubscribe("remove_delete", "table_method", tru
 
 table.prototype.update = function(data, options) {
     return new Promise((resolve, reject) => {
-        var msg = {
-            name: this._name,
-            cmd: "table_method",
-            method: "update",
-            args: [data, options || {}]
-        };
-        this._worker.post(msg, resolve, reject, false);
+        this._worker.post(
+            {
+                name: this._name,
+                cmd: "table_method",
+                method: "update",
+                args: [data, options || {}]
+            },
+            resolve,
+            reject,
+            false
+        );
     });
 };
 
 table.prototype.execute = function(f) {
-    var msg = {
+    this._worker.post({
         cmd: "table_execute",
         name: this._name,
         f: f.toString()
-    };
-    this._worker.post(msg);
+    });
 };

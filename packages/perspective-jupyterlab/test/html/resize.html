@@ -31,8 +31,10 @@
                 window.__CSV__ = xhr.response;
                 window.__WIDGET__ = new PerspectiveLumino.PerspectiveWidget();
                 container.appendChild(window.__WIDGET__.node);
-                window.__WIDGET__.load(perspective.worker().table(xhr.response));
-                window.__WIDGET__.plugin = "datagrid";
+                perspective.worker().table(xhr.response).then(table => {
+                    window.__WIDGET__.load(table); 
+                    window.__WIDGET__.plugin = "datagrid";
+                });
             }
             xhr.send(null);
 

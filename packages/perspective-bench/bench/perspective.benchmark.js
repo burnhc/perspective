@@ -79,7 +79,7 @@ describe("Table", async () => {
             describe("table", () => {
                 benchmark(name, async () => {
                     let test = data[name];
-                    table = worker.table(test.slice ? test.slice() : test);
+                    table = await worker.table(test.slice ? test.slice() : test);
                     await table.size();
                 });
             });
@@ -89,7 +89,7 @@ describe("Table", async () => {
 
 describe("Update", async () => {
     // Generate update data from Perspective
-    const static_table = worker.table(data.arrow.slice());
+    const static_table = await worker.table(data.arrow.slice());
     const static_view = await static_table.view();
 
     let table, view;
@@ -106,7 +106,7 @@ describe("Update", async () => {
             // Benchmark how long it takes the table to update without any
             // linked contexts to notify.
             describe("table_only", async () => {
-                table = worker.table(data.arrow.slice());
+                table = await worker.table(data.arrow.slice());
 
                 let test_data = await static_view[`to_${name}`]({end_row: 500});
                 benchmark(name, async () => {
@@ -118,7 +118,7 @@ describe("Update", async () => {
             });
 
             describe("ctx0", async () => {
-                table = worker.table(data.arrow.slice());
+                table = await worker.table(data.arrow.slice());
                 view = await table.view();
 
                 let test_data = await static_view[`to_${name}`]({end_row: 500});
@@ -131,7 +131,7 @@ describe("Update", async () => {
             });
 
             describe("ctx1", async () => {
-                table = worker.table(data.arrow.slice());
+                table = await worker.table(data.arrow.slice());
                 view = await table.view({
                     row_pivots: ["State"]
                 });
@@ -146,7 +146,7 @@ describe("Update", async () => {
             });
 
             describe("ctx1 deep", async () => {
-                table = worker.table(data.arrow.slice());
+                table = await worker.table(data.arrow.slice());
                 view = await table.view({
                     row_pivots: ["State", "City"]
                 });
@@ -160,7 +160,7 @@ describe("Update", async () => {
             });
 
             describe("ctx2", async () => {
-                table = worker.table(data.arrow.slice());
+                table = await worker.table(data.arrow.slice());
                 view = await table.view({
                     row_pivots: ["State"],
                     column_pivots: ["Sub-Category"]
@@ -175,7 +175,7 @@ describe("Update", async () => {
             });
 
             describe("ctx2 deep", async () => {
-                table = worker.table(data.arrow.slice());
+                table = await worker.table(data.arrow.slice());
                 view = await table.view({
                     row_pivots: ["State", "City"],
                     column_pivots: ["Sub-Category"]
@@ -190,7 +190,7 @@ describe("Update", async () => {
             });
 
             describe("ctx1.5", async () => {
-                table = worker.table(data.arrow.slice());
+                table = await worker.table(data.arrow.slice());
                 view = await table.view({
                     column_pivots: ["Sub-Category"]
                 });
@@ -208,7 +208,7 @@ describe("Update", async () => {
 
 describe("Deltas", async () => {
     // Generate update data from Perspective
-    const static_table = worker.table(data.arrow.slice());
+    const static_table = await worker.table(data.arrow.slice());
     const static_view = await static_table.view();
 
     let table, view;
@@ -220,7 +220,7 @@ describe("Deltas", async () => {
 
     describe("mixed", async () => {
         describe("ctx0", async () => {
-            table = worker.table(data.arrow.slice());
+            table = await worker.table(data.arrow.slice());
             view = await table.view();
             view.on_update(() => {}, {mode: "row"});
             const test_data = await static_view.to_arrow({end_row: 500});
@@ -233,7 +233,7 @@ describe("Deltas", async () => {
         });
 
         describe("ctx1", async () => {
-            table = worker.table(data.arrow.slice());
+            table = await worker.table(data.arrow.slice());
             view = await table.view({
                 row_pivots: ["State"]
             });
@@ -248,7 +248,7 @@ describe("Deltas", async () => {
         });
 
         describe("ctx1 deep", async () => {
-            table = worker.table(data.arrow.slice());
+            table = await worker.table(data.arrow.slice());
             view = await table.view({
                 row_pivots: ["State", "City"]
             });
@@ -263,7 +263,7 @@ describe("Deltas", async () => {
         });
 
         describe("ctx2", async () => {
-            table = worker.table(data.arrow.slice());
+            table = await worker.table(data.arrow.slice());
             view = await table.view({
                 row_pivots: ["State"],
                 column_pivots: ["Sub-Category"]
@@ -279,7 +279,7 @@ describe("Deltas", async () => {
         });
 
         describe("ctx2 deep", async () => {
-            table = worker.table(data.arrow.slice());
+            table = await worker.table(data.arrow.slice());
             view = await table.view({
                 row_pivots: ["State", "City"],
                 column_pivots: ["Sub-Category"]
@@ -295,7 +295,7 @@ describe("Deltas", async () => {
         });
 
         describe("ctx1.5", async () => {
-            table = worker.table(data.arrow.slice());
+            table = await worker.table(data.arrow.slice());
             view = await table.view({
                 column_pivots: ["Sub-Category"]
             });
@@ -315,7 +315,7 @@ describe("View", async () => {
     let table;
 
     beforeAll(async () => {
-        table = worker.table(data.arrow.slice());
+        table = await worker.table(data.arrow.slice());
     });
 
     afterAll(async () => {
@@ -386,7 +386,7 @@ describe("Computed Column", async () => {
                     }
                 });
 
-                table = worker.table(data.arrow.slice());
+                table = await worker.table(data.arrow.slice());
                 let add_computed_method;
                 if (table.add_computed) {
                     add_computed_method = table.add_computed;
@@ -539,7 +539,7 @@ async function get_data_browser(worker) {
     const arrow = await content.arrayBuffer();
 
     console.log("Generating JSON");
-    const tbl = worker.table(arrow.slice());
+    const tbl = await worker.table(arrow.slice());
     const view = tbl.view();
     const json = await view.to_json();
     const columns = await view.to_columns();
@@ -558,7 +558,7 @@ async function get_data_node(worker) {
     const arrow = fs.readFileSync(ARROW_FILE, null).buffer;
 
     console.log("Generating JSON");
-    const tbl = worker.table(arrow.slice());
+    const tbl = await worker.table(arrow.slice());
     const view = tbl.view();
     const rows = await view.to_json();
     const columns = await view.to_columns();
