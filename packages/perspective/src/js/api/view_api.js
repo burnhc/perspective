@@ -7,7 +7,6 @@
  *
  */
 
-import {bindall} from "../utils.js";
 import {subscribe, unsubscribe, async_queue} from "./dispatch.js";
 
 /**
