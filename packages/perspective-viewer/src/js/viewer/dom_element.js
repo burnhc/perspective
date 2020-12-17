@@ -98,17 +98,11 @@ export class DomElement extends PerspectiveElement {
                 // Get all unique values for the column by pivoting on it.
                 this._table
                     .view({row_pivots: [name], columns: []})
-                    .then(view => {
-                        // set as a property so we can delete it after the
-                        // autocomplete choices are set.
-                        this._filter_view = view;
-                        return view.to_json();
-                    })
-                    .then(json => row.choices(this._autocomplete_choices(json)))
-                    .finally(() => {
-                        // Clean up the View on the Emscripten heap.
-                        this._filter_view.delete();
-                        delete this._filter_view;
+                    .then(v => [v, v.to_json()])
+                    .then(result => {
+                        let view = result[0];
+                        let json = result[1];
+                        json.then(json => row.choices(this._autocomplete_choices(json))).then(() => view.delete());
                     });
             }
         }
