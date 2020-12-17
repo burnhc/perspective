@@ -78,7 +78,7 @@
              * synchronization between server and client, see
              * `client_server_editing.html`.
              */
-            const table = worker.table(view);
+            const table = await worker.table(view);
             
             // Load the local table in the `<perspective-viewer>`.
             document.getElementById('viewer').load(table);

@@ -43,7 +43,8 @@
             var client = perspective.websocket();
             let view = client.open_view('data_source_one');
             let arrow = await view.to_arrow();
-            elem.load(perspective.worker().table(arrow));
+            let table = await perspective.worker().table(arrow);
+            elem.load(table);
         });
     </script>
 

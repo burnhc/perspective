@@ -25,7 +25,7 @@ async function get_feed(feedname, callback) {
 const worker = perspective.worker();
 
 async function get_schema(feed) {
-    const table = worker.table(feed);
+    const table = await worker.table(feed);
     const schema = await table.schema();
     table.delete();
     return schema;
@@ -41,7 +41,7 @@ async function main() {
     const feeds = await Promise.all(feednames.map(get_feed));
     const schema = await merge_schemas(feeds);
 
-    const table = worker.table(schema, {index: "station_id"});
+    const table = await worker.table(schema, {index: "station_id"});
     for (let feed of feeds) {
         table.update(feed);
     }

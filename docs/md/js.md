@@ -183,7 +183,7 @@ var data = [
     {x: 4, y: "d", z: false}
 ];
 
-const table1 = worker.table(data);
+const table1 = await worker.table(data);
 ```
 
 `table()`s are columnar data structures, and each column must have a single
@@ -214,7 +214,7 @@ var schema = {
     z: "boolean"
 };
 
-const table2 = worker.table(schema);
+const table2 = await worker.table(schema);
 ```
 
 Once instantiated, a `table()` can be updated with new data via the `update()`
@@ -237,7 +237,7 @@ table:
 
 ```javascript
 // Use the 'x' column as a primary key
-const table3 = worker.table(
+const table3 = await worker.table(
     {
         x: [1, 2, 3, 4],
         y: ["a", "b", "c", "d"]
@@ -271,7 +271,7 @@ rows.
 
 ```javascript
 // Keep only the most recent 1000 rows
-const table3 = worker.table(data, {limit: 1000});
+const table3 = await worker.table(data, {limit: 1000});
 ```
 
 Appended rows that exceed the `limit` overwrite old rows starting at position 0.
@@ -318,7 +318,7 @@ To query the table, create a `view()` on the table instance with an optional
 configuration object:
 
 ```javascript
-const table = worker.table(data);
+const table = await worker.table(data);
 
 const view = await table.view({
     columns: ["Sales"],
@@ -388,11 +388,11 @@ const worker1 = perspective.worker();
 const worker2 = perspective.worker();
 
 // Create a `table and `view` on `worker1`.
-const table = worker1.table(data);
+const table = await worker1.table(data);
 const view = await table.view({filter: [["State", "==", "Texas"]]});
 
 // Create a table from `view` in `worker2`
-const table2 = worker2.table(view);
+const table2 = await worker2.table(view);
 const view2 = await table2.view({filter: [["City", "==", "Austin"]]});
 
 //  Both `view1` and `view2` are updated.
@@ -458,7 +458,7 @@ Perspective will not infer these types for you, so you'll need to create your
 table [from a schema](#loading-data-with-table) to use them:
 
 ```javascript
-const table = worker.table({volume: "integer", price: "price"});
+const table = await worker.table({volume: "integer", price: "price"});
 table.update([{volume: 10, price: 100.75}]);
 ```
 
@@ -576,7 +576,7 @@ the `load()` method.
 
 ```javascript
 // Create a new worker, then a new table on that worker.
-var table = perspective.worker().table(data);
+var table = await perspective.worker().table(data);
 
 // Bind a viewer element to this table.
 viewer.load(table);
@@ -620,7 +620,7 @@ var view2 = document.getElementById("view2");
 var worker = perspective.worker();
 
 // Create a table in this worker
-var table = worker.table(data);
+var table = await worker.table(data);
 
 // Load the same table in 2 different <perspective-viewer>s
 view1.load(table);

@@ -27,7 +27,7 @@ const worker = perspective.worker();
 
 // Use Perspective WebWorker's table to infer the feed's schema.
 async function get_schema(feed) {
-    const table = worker.table(feed);
+    const table = await worker.table(feed);
     const schema = await table.schema();
     table.delete();
     return schema;
@@ -38,7 +38,7 @@ async function merge_schemas(feeds) {
     const schemas = await Promise.all(feeds.map(get_schema));
     return Object.assign({}, ...schemas);
 }
-   
+
 async function get_layout() {
     const req = await fetch("layout.json");
     const json = await req.json();
@@ -51,8 +51,8 @@ async function main() {
     const schema = await merge_schemas(feeds);
 
     // Creating a table by joining feeds with an index
-    const table = worker.table(schema, {index: "station_id"});
-    
+    const table = await worker.table(schema, {index: "station_id"});
+
     // Load the `table` in the `<perspective-viewer>` DOM reference with the initial `feeds`.
     for (let feed of feeds) {
         table.update(feed);
