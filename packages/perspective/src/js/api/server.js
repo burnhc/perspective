@@ -8,7 +8,6 @@
  */
 
 import {override_config} from "../config";
-import {table} from "./table_api";
 
 function error_to_json(error) {
     const obj = {};
