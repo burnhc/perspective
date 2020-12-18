@@ -27,8 +27,8 @@
             xhr.open('GET', 'superstore.csv', true);
             xhr.onload = function () { 
                 window.__CSV__ = xhr.response;
-                const table = window.__WORKER__.table(xhr.response);
-                table.then(table => {
+                window.__TABLE__ = window.__WORKER__.table(xhr.response);
+                window.__TABLE__.then(table => {
                     window.__TABLE__ = table;
                     document.getElementById('workspace').tables.set("superstore", window.__TABLE__);
                 });
