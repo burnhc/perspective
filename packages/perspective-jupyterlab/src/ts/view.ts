@@ -273,7 +273,6 @@ export class PerspectiveView extends DOMWidgetView {
 
                 // If the widget is editable, set up client/server editing
                 if (this.pWidget.editable) {
-                    // TODO: make async
                     kernel_view.to_arrow().then((arrow: ArrayBuffer) => {
                         this.client_worker.table(arrow, table_options).then(client_table => {
                             client_table.view().then(client_view => {

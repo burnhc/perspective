@@ -18,7 +18,7 @@
     </head>
     <body>
         <perspective-workspace id="workspace"></perspective-workspace>
-        <perspective-viewer style="display: none;"></perspective-viewer>
+        <perspective-viewer id="viewer" style="display: none;"></perspective-viewer>
 
         <script>
 
@@ -30,6 +30,7 @@
                 window.__TABLE__ = window.__WORKER__.table(xhr.response);
                 window.__TABLE__.then(table => {
                     window.__TABLE__ = table;
+                    document.getElementById("viewer").load(table);
                     document.getElementById('workspace').tables.set("superstore", window.__TABLE__);
                 });
             }
